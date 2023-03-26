@@ -1,0 +1,71 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments::head}"></head>
+<title>本地用户</title>
+<body class="container">
+
+<div th:replace="~{fragments::navbar2(current=localList)}"></div>
+
+<script defer>
+
+</script>
+
+<div class="jumbotron">
+    <div>
+
+        <a class="btn btn-default" href="#" th:href="@{/member/addLocal}" role="button">添加用户</a>
+
+        <div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>用户名</th>
+                    <th>邮箱</th>
+                    <th>角色</th>
+                    <th>地址</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item:${items}" th:class="'local-item-'+${item.id}">
+                    <td th:text="${item.id}"></td>
+                    <td th:text="${item.name}"></td>
+                    <td th:text="${item.email}"></td>
+                    <td th:text="${item.roles}"></td>
+                    <td th:text="${item.address}"></td>
+                    <th:block th:if="${item.state}==1">
+                        <td><span style="color: green;font-weight: bold;">启用</span></td>
+                    </th:block>
+                    <th:block th:if="${item.state}==0">
+                        <td><span style="color: brown;font-weight: bold;">禁用</span></td>
+                    </th:block>
+                    <td><a class="btn-link" style="text-decoration: none;color: #337ab7;" href="javascript:void(0);"
+                           th:onclick="'localDelete('+${item.id}+')'">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p id="message" class=".alert-success">
+
+        </p>
+        <p class="bg-danger" style="background-color: #f2dede!important;text-align: center"></p>
+    </div>
+
+</body>
+<script type="application/javascript">
+    function localDelete(id) {
+        $.get("/webapp/member/localDelete/" + id, function (result) {
+            if (result == "ok") {
+                $(".local-item-" + id).remove();
+            } else {
+                $(".bg-danger").css("padding", "15px");
+                $(".bg-danger").html(result);
+                setTimeout("$('.bg-danger').html('');$('.bg-danger').css('padding','0px')", 3000);
+            }
+        });
+    }
+</script>
+</html>

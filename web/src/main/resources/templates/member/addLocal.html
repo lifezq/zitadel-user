@@ -1,0 +1,73 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments::head}"></head>
+<title>添加用户</title>
+<body class="container">
+
+<div th:replace="~{fragments::navbar2(current=localList)}"></div>
+
+<script defer>
+
+</script>
+
+<div class="jumbotron">
+    <div>
+
+        <a class="btn btn-default" href="#" th:href="@{/member/addLocal}" role="button">添加用户</a>
+
+        <div>
+            <form class="form-horizontal" th:action="@{/member/addLocal}" method="post"
+                  enctype="application/x-www-form-urlencoded">
+                <div class="form-group">
+                    <label for="inputUser" class="col-sm-2 control-label">用户名</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputUser" placeholder="Username" name="username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">邮箱</label>
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email" name="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="inputPassword3" placeholder="Password"
+                               name="password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputRole" class="col-sm-2 control-label">角色</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputRole" placeholder="Role" name="role">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-default">创建</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <p id="message" class=".alert-success">
+
+        </p>
+        <p class="bg-danger" style="background-color: #f2dede!important;text-align: center"></p>
+    </div>
+
+</body>
+<script type="application/javascript">
+    function localDelete(id) {
+        $.get("/webapp/member/localDelete/" + id, function (result) {
+            if (result == "ok") {
+                $(".local-item-" + id).remove();
+            } else {
+                $(".bg-danger").css("padding", "15px");
+                $(".bg-danger").html(result);
+                setTimeout("$('.bg-danger').html('');$('.bg-danger').css('padding','0px')", 3000);
+            }
+        });
+    }
+</script>
+</html>

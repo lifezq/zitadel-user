@@ -1,0 +1,49 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments::head}">
+    <title>Account Console</title>
+</head>
+<body class="container">
+
+<div th:replace="~{fragments::navbar2(current=login)}"></div>
+
+<div class="container  center-block">
+
+    <div class="jumbotron col-md-6" style="float: none;width: 480px;margin:0 auto; ">
+        <div class="center-block">
+            <!-- Main component for a primary marketing message or call to action -->
+            <form th:action="@{/login}" method="post" th:method="post" class="form-signin">
+                <h2 class="form-signin-heading">你好，欢迎登录</h2>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="inputUsername" class="sr-only">Username</label>
+                    <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="username"
+                           required=""
+                           autofocus="">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="inputPassword" class="sr-only">Password</label>
+                    <input type="password" id="inputPassword" class="form-control" placeholder="Password"
+                           name="password"
+                           required="">
+                </div>
+                <div class="form-group text-center" style="margin-bottom: 15px;">
+                    <a style="color: #337ab7;text-decoration:none; "
+                       href="/oauth2/authorization/zitadel"
+                       th:href="@{/oauth2/authorization/zitadel}">使用Zitadel登录</a>
+                </div>
+                <div class="form-group text-center">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="remember-me"> 记住我
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    <button class="btn btn-lg btn-primary btn-block" style="width: 100%;" type="submit">登录</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div> <!-- /container -->
+</body>
+</html>
