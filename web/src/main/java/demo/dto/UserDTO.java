@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @Package demo.dto
  * @ClassName UserDTO
@@ -15,8 +17,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
+    @NotBlank(message = "用户名不能为空")
     private String username;
+    @NotBlank(message = "邮箱不能为空")
     private String email;
     private String password;
+    @NotBlank(message = "角色不能为空")
     private String role;
 }

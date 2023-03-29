@@ -15,31 +15,34 @@
         <a class="btn btn-default" href="#" th:href="@{/member/addLocal}" role="button">添加用户</a>
 
         <div>
-            <form class="form-horizontal" th:action="@{/member/addLocal}" method="post"
+            <form id="add-local-form" th:action="@{/member/addLocal}" class="form-horizontal" method="post"
                   enctype="application/x-www-form-urlencoded">
                 <div class="form-group">
                     <label for="inputUser" class="col-sm-2 control-label">用户名</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputUser" placeholder="Username" name="username">
+                        <input type="text" class="form-control" id="inputUser" placeholder="Username" name="username"
+                               required="required">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">邮箱</label>
                     <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email" name="email">
+                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email" name="email"
+                               required="required">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
                     <div class="col-sm-10">
                         <input type="password" class="form-control" id="inputPassword3" placeholder="Password"
-                               name="password">
+                               name="password" required="required">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputRole" class="col-sm-2 control-label">角色</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputRole" placeholder="Role" name="role">
+                        <input type="text" class="form-control" id="inputRole" placeholder="Role" name="role"
+                               required="required">
                     </div>
                 </div>
                 <div class="form-group">
@@ -55,19 +58,40 @@
         </p>
         <p class="bg-danger" style="background-color: #f2dede!important;text-align: center"></p>
     </div>
-
+</div>
 </body>
-<script type="application/javascript">
-    function localDelete(id) {
-        $.get("/webapp/member/localDelete/" + id, function (result) {
-            if (result == "ok") {
-                $(".local-item-" + id).remove();
-            } else {
-                $(".bg-danger").css("padding", "15px");
-                $(".bg-danger").html(result);
-                setTimeout("$('.bg-danger').html('');$('.bg-danger').css('padding','0px')", 3000);
-            }
-        });
-    }
+<script type="text/javascript">
+    $(document).ready(function () {
+        console.log("document loaded");
+        $("#add-local-form").submit(function () {
+            console.log("form submitted");
+            $.ajax({
+                url: "/webapp/member/addLocal",
+                type: "POST",
+                datatype: "text",
+                data: $(this).serialize(),
+                success: function (data) {
+                    console.log("success", data);
+                    if (data.code == 200) {
+                        window.location.href = "/webapp/member/localList";
+                    } else {
+                        $(".bg-danger").css("padding", "15px");
+                        var err = "";
+                        if (data.data.username != undefined && data.data.username != "") {
+                            err = data.data.username + "</br>";
+                        }
+                        if (data.data.email != undefined && data.data.email != "") {
+                            err += data.data.email + "</br>";
+                        }
+                        if (data.data.role != undefined && data.data.role != "") {
+                            err += data.data.role + "</br>";
+                        }
+                        $(".bg-danger").html(err);
+                        setTimeout("$('.bg-danger').html('');$('.bg-danger').css('padding','0px')", 3000);
+                    }
+                }
+            });
+        }).attr("action", "javascript:void();");
+    });
 </script>
 </html>

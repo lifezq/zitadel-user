@@ -1,16 +1,19 @@
 package demo.web;
 
 
+import demo.dto.ResponseDTO;
 import demo.dto.UserDTO;
 import demo.model.Users;
 import demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +39,8 @@ public class MemberController {
     }
 
     @PostMapping(value = "/addLocal", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String addLocalPost(@ModelAttribute UserDTO userDTO, Model model) {
+    @ResponseBody
+    public ResponseDTO<String> addLocalPost(@Valid @ModelAttribute UserDTO userDTO, Model model) {
         try {
             Users users = Users.builder()
                     .name(userDTO.getUsername())
@@ -47,9 +51,12 @@ public class MemberController {
                     .state((short) 1).build();
             userRepository.save(users);
         } catch (Exception e) {
-            e.printStackTrace();
+            return ResponseDTO.<String>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                    .data(e.getMessage()).build();
         }
-        return this.localList(model);
+        return ResponseDTO.<String>builder().build();
     }
 
     @GetMapping("/localDelete/{id}")
@@ -61,5 +68,14 @@ public class MemberController {
         }
         userRepository.deleteById(id);
         return "ok";
+    }
+
+    @GetMapping("/remoteList")
+    public String remoteList(Model model) {
+        List<Users> items = new ArrayList<>();
+        Iterable<Users> users = userRepository.findAll();
+        users.forEach(x -> items.add(x));
+        model.addAttribute("items", items);
+        return "/member/localList";
     }
 }

@@ -30,7 +30,10 @@ import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Configuration
 @RequiredArgsConstructor
@@ -127,7 +130,7 @@ class WebSecurityConfig {
             OidcUser user = userService.loadUser(userRequest);
 
             System.out.printf("ZITADEL登录成功后，逻辑处理中，当前用户:%s\n", user);
-
+            
             /*
              * 查询当前用户数据库，用户是否存在，如果不存在则同步用户信息到本地数据库中
              */
@@ -138,12 +141,17 @@ class WebSecurityConfig {
             } else {
                 System.out.println("未查询到用户：" + user.getPreferredUsername());
                 System.out.println("正在进行用户《" + user.getPreferredUsername() + "》同步中...");
-                
+
+                LinkedHashMap<String, String> roles = (LinkedHashMap<String, String>) user.getUserInfo().getClaims().get("urn:zitadel:iam:org:project:roles");
+                Set<String> roleKeys = roles.keySet();
+
                 // TODO 未查询到用户，向用户表里同步该用户
                 userRepository.save(Users.builder()
                         .name(user.getPreferredUsername())
+                        .email(user.getEmail())
                         .password("123456")
-                        .roles("ROLE_default").build());
+                        .state((short) 1)
+                        .roles(roleKeys.stream().collect(Collectors.joining(","))).build());
 
                 System.out.println("同步用户《" + user.getPreferredUsername() + "》成功！");
             }
