@@ -1,10 +1,10 @@
-package demo.web;
+package com.zitadel.user.web;
 
 
-import demo.dto.ResponseDTO;
-import demo.dto.UserDTO;
-import demo.model.Users;
-import demo.repository.UserRepository;
+import com.zitadel.user.dto.ResponseDTO;
+import com.zitadel.user.dto.UserDTO;
+import com.zitadel.user.model.Users;
+import com.zitadel.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

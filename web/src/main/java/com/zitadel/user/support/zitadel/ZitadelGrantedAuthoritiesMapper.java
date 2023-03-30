@@ -1,4 +1,4 @@
-package demo.support.zitadel;
+package com.zitadel.user.support.zitadel;
 
 import lombok.var;
 import org.springframework.security.core.GrantedAuthority;

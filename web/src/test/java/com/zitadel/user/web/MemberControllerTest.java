@@ -1,4 +1,4 @@
-package demo.web;
+package com.zitadel.user.web;
 
 import org.junit.jupiter.api.Test;
 

@@ -1,16 +1,17 @@
-package demo.config;
+package com.zitadel.user.config;
 
-import demo.model.Users;
-import demo.repository.UserRepository;
-import demo.support.CustomUserDetailsService;
-import demo.support.zitadel.ZitadelGrantedAuthoritiesMapper;
-import demo.support.zitadel.ZitadelLogoutHandler;
+import com.zitadel.user.model.Users;
+import com.zitadel.user.repository.UserRepository;
+import com.zitadel.user.support.CustomUserDetailsService;
+import com.zitadel.user.support.zitadel.ZitadelGrantedAuthoritiesMapper;
+import com.zitadel.user.support.zitadel.ZitadelLogoutHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,7 +30,9 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.Set;
@@ -54,25 +57,35 @@ class WebSecurityConfig {
     @Value("${spring.security.oauth2.client.registration.zitadel.scope}")
     private String[] scope;
 
+    @Value("${webconfig.allowedOriginPatterns}")
+    private String allowedOriginPatterns;
+
     private final ZitadelLogoutHandler zitadelLogoutHandler;
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private AuthenticationManagerBuilder authenticationManagerBuilder;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
 
+        http.cors().configurationSource(request -> {
+            var cors = new CorsConfiguration();
+            cors.setAllowedOriginPatterns(Arrays.asList(allowedOriginPatterns.split(",")));
+            cors.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            cors.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "sessionToken", "X-TOKEN", "Origin"));
+            cors.setAllowCredentials(true);
+            cors.validateAllowCredentials();
+            return cors;
+        });
+
         http.authorizeRequests(arc -> {
             // declarative route configuration
-            arc.antMatchers("/webjars/**", "/resources/**", "/css/**", "/user/**", "/imgs/**", "/login**", "/login/**").permitAll();
+            arc.antMatchers("/webjars/**", "/resources/**", "/css/**", "/imgs/**", "/login**", "/login/**").permitAll();
+            arc.antMatchers(HttpMethod.OPTIONS, "/**").permitAll();
             // add additional routes
-            arc.mvcMatchers("/api/greetings/me/u2").hasAnyRole("p1-u2-role")
-                    .mvcMatchers("/api/greetings/me/u3").hasAnyRole("p1-u3-role")
-                    .mvcMatchers("/api/web").hasAnyRole("read")
+            arc.mvcMatchers("/member/**").hasAnyRole("admin")
                     .anyRequest().authenticated();
         });
 
@@ -130,7 +143,7 @@ class WebSecurityConfig {
             OidcUser user = userService.loadUser(userRequest);
 
             System.out.printf("ZITADEL登录成功后，逻辑处理中，当前用户:%s\n", user);
-            
+
             /*
              * 查询当前用户数据库，用户是否存在，如果不存在则同步用户信息到本地数据库中
              */

@@ -1,4 +1,4 @@
-package demo.dto;
+package com.zitadel.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

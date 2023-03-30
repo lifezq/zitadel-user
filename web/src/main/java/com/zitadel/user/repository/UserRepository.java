@@ -1,6 +1,6 @@
-package demo.repository;
+package com.zitadel.user.repository;
 
-import demo.model.Users;
+import com.zitadel.user.model.Users;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,6 @@
-package demo.advice;
+package com.zitadel.user.advice;
 
-import demo.dto.ResponseDTO;
+import com.zitadel.user.dto.ResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;

@@ -1,4 +1,4 @@
-package demo.support.zitadel;
+package com.zitadel.user.support.zitadel;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
@@ -24,30 +24,39 @@ import java.io.IOException;
 public class ZitadelLogoutHandler implements LogoutHandler {
     private static final Logger logger = LogManager.getLogger(ZitadelLogoutHandler.class);
 
-    //    public static final String ZITADEL_END_SESSION_ENDPOINT = "https://accounts.zitadel.ch/oauth/v2/endsession";
     @Value("${spring.security.oauth2.client.provider.zitadel.issuer-uri}/oidc/v1/end_session")
     public String ZITADEL_END_SESSION_ENDPOINT;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
 
-        if (auth.getPrincipal() instanceof OidcUser) {
+        String defaultRedirectUri = generateAppUri(request);
+        try {
 
-            var principal = (DefaultOidcUser) auth.getPrincipal();
-            var idToken = principal.getIdToken();
+            if (auth != null && auth.getPrincipal() instanceof OidcUser) {
 
-            log.debug("Propagate logout to zitadel for user. userId={}", idToken.getSubject());
+                var principal = (DefaultOidcUser) auth.getPrincipal();
+                var idToken = principal.getIdToken();
 
-            var idTokenValue = idToken.getTokenValue();
-            var defaultRedirectUri = generateAppUri(request);
-            var logoutUrl = createZitadelLogoutUrl(idTokenValue, defaultRedirectUri);
+                log.debug("Propagate logout to zitadel for user. userId={}", idToken.getSubject());
+
+                var idTokenValue = idToken.getTokenValue();
+                var logoutUrl = createZitadelLogoutUrl(idTokenValue, defaultRedirectUri);
+
+                try {
+                    response.sendRedirect(logoutUrl);
+                } catch (IOException e) {
+                    log.error("Could not propagate logout for user to zitadel. userId={}", idToken.getSubject(), e);
+                }
+            }
+        } catch (Exception e) {
 
             try {
-                response.sendRedirect(logoutUrl);
-            } catch (IOException e) {
-                log.error("Could not propagate logout for user to zitadel. userId={}", idToken.getSubject(), e);
+                response.sendRedirect(defaultRedirectUri);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
             }
-        } else {
+        } finally {
 
             HttpSession session = request.getSession(false);
             if (session != null) {
@@ -59,7 +68,7 @@ public class ZitadelLogoutHandler implements LogoutHandler {
 
             SecurityContext context = SecurityContextHolder.getContext();
             SecurityContextHolder.clearContext();
-            context.setAuthentication((Authentication) null);
+            context.setAuthentication(null);
         }
     }
 

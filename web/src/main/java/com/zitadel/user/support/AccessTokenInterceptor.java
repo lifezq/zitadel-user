@@ -1,4 +1,4 @@
-package demo.support;
+package com.zitadel.user.support;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,6 @@ public class AccessTokenInterceptor implements ClientHttpRequestInterceptor {
         var accessToken = tokenAccessor.getAccessTokenForCurrentUser();
 
         if (accessToken != null) {
-//            System.out.printf("Set header AUTHORIZATION: Bearer %s\n", accessToken.getTokenValue());
             request.getHeaders().add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken.getTokenValue());
         }
 

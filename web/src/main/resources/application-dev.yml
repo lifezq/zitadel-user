@@ -40,6 +40,9 @@ logging:
         web: info
         security: debug
 
+webconfig:
+  allowedOriginPatterns: http://localhost
+
 zitadel:
   service:
     token: 'ZMGlB2qSpjm0RtqTbDeTgibZVV4k5jzPdQzGN8iZbmnp4DRXj4ZFxl32QqmwG11BEUKo4Ow'

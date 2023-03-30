@@ -1,8 +1,9 @@
-package demo.config;
+package com.zitadel.user.config;
 
-import demo.model.Users;
-import demo.repository.UserRepository;
-import demo.support.TokenAccessor;
+import com.zitadel.user.model.Users;
+import com.zitadel.user.repository.UserRepository;
+import com.zitadel.user.support.AccessTokenInterceptor;
+import com.zitadel.user.support.TokenAccessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +32,15 @@ class WebClientConfig {
         return new RestTemplateBuilder() //
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + serviceToken)
 //                .interceptors(new AccessTokenInterceptor(tokenAccessor)) //
+                .build();
+    }
+
+    @Bean
+    @Qualifier("default_template")
+    RestTemplate restTemplateForToken() {
+        AccessTokenInterceptor accessToken = new AccessTokenInterceptor(tokenAccessor);
+        return new RestTemplateBuilder()
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .build();
     }
 

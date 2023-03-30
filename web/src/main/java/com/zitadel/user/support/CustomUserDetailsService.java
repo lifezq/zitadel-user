@@ -1,7 +1,7 @@
-package demo.support;
+package com.zitadel.user.support;
 
-import demo.model.Users;
-import demo.repository.UserRepository;
+import com.zitadel.user.model.Users;
+import com.zitadel.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

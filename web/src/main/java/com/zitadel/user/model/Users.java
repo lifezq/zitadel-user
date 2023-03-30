@@ -1,4 +1,4 @@
-package demo.model;
+package com.zitadel.user.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
